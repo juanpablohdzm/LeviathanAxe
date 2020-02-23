@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "AAxe.generated.h"
 
+
 UCLASS()
 class VRMECHANICS_API AAAxe : public AActor
 {
@@ -37,11 +38,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mechanics")
 	bool IsRecoverActive;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Mechanics")
-	class USceneComponent* Hand;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Mechanics")
-	TSubclassOf<class UDamageType> DamageType;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mechanics")
+	class UParticleSystemComponent* ParticleSystem;
 
 
 protected:
@@ -67,6 +65,9 @@ private:
 
 	float time;
 
+	class USceneComponent* Hand;
+	FString HandType;
+
 private:
 
 	FVector QuadraticBezierCurve(float t, const FVector& InitialPos, const FVector& FinalPos, const FVector& MiddlePoint);
@@ -82,5 +83,11 @@ public:
 	void PostInitializeComponents() override;
 
 	void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+
+	UFUNCTION(BlueprintCallable)
+	class USceneComponent* GetHand() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetHand(class USceneComponent* val, FString handType);
 
 };

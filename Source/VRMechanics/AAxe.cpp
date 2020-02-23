@@ -8,6 +8,7 @@
 #include <DrawDebugHelpers.h>
 #include <../Plugins/Runtime/ApexDestruction/Source/ApexDestruction/Public/DestructibleComponent.h>
 #include <Engine/Engine.h>
+#include <Particles/ParticleSystemComponent.h>
 
 // Sets default values
 AAAxe::AAAxe()
@@ -20,6 +21,9 @@ AAAxe::AAAxe()
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(FName("BoxCollision"));
 	BoxComponent->SetupAttachment(RootComponent);
+
+	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(FName("ParticleSystem"));
+	ParticleSystem->SetupAttachment(RootComponent);
 
 	MovSpeed = 20000.0f;
 	RotSpeed = 20.0f;
@@ -43,10 +47,22 @@ void AAAxe::BeginPlay()
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AAAxe::OnAxeCollides);
 }
 
+class USceneComponent* AAAxe::GetHand() const
+{
+	return Hand;
+}
+
+void AAAxe::SetHand(class USceneComponent* val,FString handType)
+{
+	Hand = val;
+	HandType = handType;
+}
+
 void AAAxe::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 	IsRotationActive = false;
+	ParticleSystem->Deactivate();
 }
 
 void AAAxe::OnAxeCollides(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -56,6 +72,7 @@ void AAAxe::OnAxeCollides(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	{		
 		StaticMesh->SetSimulatePhysics(false);
 		IsRotationActive = false;
+		ParticleSystem->Deactivate();
 	}
 }
 
@@ -67,15 +84,17 @@ void AAAxe::ThrowAxe()
 
 	SetActorRotation(Rotator);
 
+	ParticleSystem->Activate(true);
 	StaticMesh->SetSimulatePhysics(true);
-	StaticMesh->AddImpulse(ForwardVector * MovSpeed);
 	IsRotationActive = true;
+	StaticMesh->AddImpulse(ForwardVector * MovSpeed);
 	Direction = 1;
 }
 
 void AAAxe::RecoverAxe()
 {
 	StaticMesh->SetSimulatePhysics(false);
+	ParticleSystem->Activate(true);
 	IsRotationActive = true;
 	Direction = -1;
 	time = 0.0f;
@@ -99,7 +118,18 @@ void AAAxe::RecoverAxe()
 void AAAxe::CalculateMiddlePoint(const FVector& InitialPos, const FVector& FinalPos)
 {
 	FVector LocalDirection = InitialPos - FinalPos;
-	FVector RightVector = FVector::CrossProduct(FVector::UpVector, LocalDirection).GetSafeNormal();
+	FVector RightVector;
+	if (HandType == "Right")
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Right"));
+		RightVector = FVector::CrossProduct(FVector::UpVector, LocalDirection).GetSafeNormal();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Left"));
+		RightVector = FVector::CrossProduct(LocalDirection, FVector::UpVector).GetSafeNormal();
+	}
+
 	MiddleAxePos = FinalAxePos + LocalDirection * 0.2f + RightVector * 400.0f;
 }
 
