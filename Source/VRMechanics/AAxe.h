@@ -42,6 +42,7 @@ protected:
 	class UParticleSystemComponent* ParticleSystem;
 
 
+
 protected:
 
 	UFUNCTION()

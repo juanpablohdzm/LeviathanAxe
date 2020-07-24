@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-RiderLink.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\JuanPablo\Documents\Unreal Projects\VRMechanics\Intermediate\Build\Win64\VRMechanicsEditor\Development\UnrealEd\SharedPCH.UnrealEd.RTTI.ShadowErrors.h.obj"
+"C:\Users\JuanPablo\Documents\Unreal Projects\VRMechanics\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UE4Editor\Development\RiderLink\Module.RiderLink.cpp.obj"
+"C:\Users\JuanPablo\Documents\Unreal Projects\VRMechanics\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UE4Editor\Development\RiderLink\Default.rc2.res"
+/OUT:"C:\Users\JuanPablo\Documents\Unreal Projects\VRMechanics\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UE4Editor\Development\RiderLink\UE4Editor-RiderLink.lib"
+/INCLUDE:IMPLEMENT_MODULE_RiderLink
